@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <style>
+        ul {
+            list-style-type: none; /* Remove bullet points */
+        }
+        .editable {
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{ title }}</h1>
+    <form action="/" method="POST">
+        <input type="text" name="note" placeholder="Enter a note">
+        <button>Add Note</button>
+    </form>
+
+    <ul id="note-list">
+    {% for note in notes %}
+        <li class="editable">{{ note }}</li>
+    {% endfor %}
+    </ul>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const notes = document.querySelectorAll('.editable');
+            
+            notes.forEach(note => {
+                const key = 'note_' + note.innerText.trim();
+                const storedNote = localStorage.getItem(key);
+                if (storedNote) {
+                    note.innerText = storedNote;
+                }
+
+                note.addEventListener('click', () => {
+                    const originalText = note.innerText;
+                    const input = document.createElement('input');
+                    input.type = 'text';
+                    input.value = originalText;
+                    input.addEventListener('blur', () => {
+                        const newText = input.value.trim();
+                        if (newText !== '' && newText !== originalText) {
+                            note.innerText = newText;
+                            localStorage.setItem(key, newText);
+                        } else {
+                            note.innerText = originalText;
+                        }
+                    });
+                    note.innerText = '';
+                    note.appendChild(input);
+                    input.focus();
+                });
+            });
+        });
+    </script>
+</body>
+</html>
